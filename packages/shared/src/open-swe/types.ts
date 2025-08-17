@@ -42,6 +42,12 @@ export interface ModelTokenData extends CacheMetrics {
   model: string;
 }
 
+export type ModelLogicProvider =
+  | "anthropic"
+  | "openai"
+  | "google-genai"
+  | "auto";
+
 export type PlanItem = {
   /**
    * The index of the plan item. This is the order in which
@@ -431,6 +437,68 @@ export const GraphConfigurationMetadata: {
       description: "Controls randomness (0 = deterministic, 2 = creative)",
     },
   },
+  forceModelLogic: {
+    x_open_swe_ui_config: {
+      type: "select",
+      default: "auto",
+      description:
+        "Force the model logic to use (anthropic, openai, google-genai, or auto to infer from model name)",
+      options: [
+        { label: "Auto (infer from model name)", value: "auto" },
+        { label: "Anthropic", value: "anthropic" },
+        { label: "OpenAI", value: "openai" },
+        { label: "Google GenAI", value: "google-genai" },
+      ],
+    },
+  },
+  openAIBaseUrl: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Custom OpenAI-compatible API endpoint URL (e.g., https://api.openrouter.ai/api/v1, http://localhost:1234/v1)",
+      placeholder: "https://api.openrouter.ai/api/v1",
+    },
+  },
+  openAIPlannerModelName: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Model name to use for planning tasks when using custom OpenAI-compatible endpoint",
+      placeholder: "anthropic/claude-3.5-sonnet",
+    },
+  },
+  openAIProgrammerModelName: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Model name to use for programming tasks when using custom OpenAI-compatible endpoint",
+      placeholder: "anthropic/claude-3.5-sonnet",
+    },
+  },
+  openAIReviewerModelName: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Model name to use for reviewer tasks when using custom OpenAI-compatible endpoint",
+      placeholder: "anthropic/claude-3.5-sonnet",
+    },
+  },
+  openAIRouterModelName: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Model name to use for routing tasks when using custom OpenAI-compatible endpoint",
+      placeholder: "anthropic/claude-3.5-haiku",
+    },
+  },
+  openAISummarizerModelName: {
+    x_open_swe_ui_config: {
+      type: "text",
+      description:
+        "Model name to use for summarizer tasks when using custom OpenAI-compatible endpoint",
+      placeholder: "anthropic/claude-3.5-sonnet",
+    },
+  },
   maxTokens: {
     x_open_swe_ui_config: {
       type: "number",
@@ -607,6 +675,57 @@ export const GraphConfiguration = z.object({
   summarizerTemperature: withLangGraph(z.number().optional(), {
     metadata: GraphConfigurationMetadata.actionGeneratorTemperature,
   }),
+
+  /**
+   * Force the model logic to use instead of inferring from model name.
+   * @default "auto"
+   */
+  forceModelLogic: withLangGraph(z.custom<ModelLogicProvider>().optional(), {
+    metadata: GraphConfigurationMetadata.forceModelLogic,
+  }),
+
+  /**
+   * Custom OpenAI-compatible API endpoint URL.
+   */
+  openAIBaseUrl: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIBaseUrl,
+  }),
+
+  /**
+   * Model name to use for planning tasks when using custom OpenAI-compatible endpoint.
+   */
+  openAIPlannerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIPlannerModelName,
+  }),
+
+  /**
+   * Model name to use for programming tasks when using custom OpenAI-compatible endpoint.
+   */
+  openAIProgrammerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIProgrammerModelName,
+  }),
+
+  /**
+   * Model name to use for reviewer tasks when using custom OpenAI-compatible endpoint.
+   */
+  openAIReviewerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIReviewerModelName,
+  }),
+
+  /**
+   * Model name to use for routing tasks when using custom OpenAI-compatible endpoint.
+   */
+  openAIRouterModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIRouterModelName,
+  }),
+
+  /**
+   * Model name to use for summarizer tasks when using custom OpenAI-compatible endpoint.
+   */
+  openAISummarizerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAISummarizerModelName,
+  }),
+
   /**
    * The maximum number of tokens to generate in an individual generation.
    * @default 10_000

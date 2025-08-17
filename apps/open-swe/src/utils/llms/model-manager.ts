@@ -182,6 +182,9 @@ export class ModelManager {
       modelProvider: provider,
       max_retries: MAX_RETRIES,
       ...(apiKey ? { apiKey } : {}),
+      ...(provider === "openai" && graphConfig.configurable?.openAIBaseUrl
+        ? { baseURL: graphConfig.configurable.openAIBaseUrl }
+        : {}),
       ...(thinkingModel && provider === "anthropic"
         ? {
             thinking: { budget_tokens: thinkingBudgetTokens, type: "enabled" },
@@ -346,7 +349,35 @@ export class ModelManager {
       modelNameParts.shift();
     }
 
-    const modelName = modelNameParts.join(":");
+    let modelName = modelNameParts.join(":");
+
+    // Check if using custom OpenAI-compatible endpoint with custom model names
+    if (modelProvider === "openai" && config.configurable?.openAIBaseUrl) {
+      let customModelName: string | undefined;
+
+      switch (task) {
+        case LLMTask.PLANNER:
+          customModelName = config.configurable?.openAIPlannerModelName;
+          break;
+        case LLMTask.PROGRAMMER:
+          customModelName = config.configurable?.openAIProgrammerModelName;
+          break;
+        case LLMTask.REVIEWER:
+          customModelName = config.configurable?.openAIReviewerModelName;
+          break;
+        case LLMTask.ROUTER:
+          customModelName = config.configurable?.openAIRouterModelName;
+          break;
+        case LLMTask.SUMMARIZER:
+          customModelName = config.configurable?.openAISummarizerModelName;
+          break;
+      }
+
+      if (customModelName) {
+        modelName = customModelName;
+      }
+    }
+
     if (modelProvider === "openai" && modelName.startsWith("o")) {
       thinkingModel = true;
     }

@@ -40,6 +40,28 @@ import { BindToolsInput } from "@langchain/core/language_models/chat_models";
 
 const logger = createLogger(LogLevel.INFO, "GenerateReviewActionsNode");
 
+/**
+ * Determine if Anthropic model logic should be used based on configuration
+ */
+const shouldUseAnthropicLogic = (
+  config: GraphConfig,
+  modelName: string,
+): boolean => {
+  const forceModelLogic = config.configurable?.forceModelLogic;
+
+  if (forceModelLogic === "anthropic") {
+    return true;
+  } else if (
+    forceModelLogic === "openai" ||
+    forceModelLogic === "google-genai"
+  ) {
+    return false;
+  } else {
+    // Default "auto" behavior - infer from model name
+    return modelName.includes("claude-");
+  }
+};
+
 function formatSystemPrompt(state: ReviewerGraphState): string {
   const activePlan = getActivePlanItems(state.taskPlan);
   const tasksString = formatPlanPromptWithSummaries(activePlan);
@@ -194,7 +216,7 @@ export async function generateReviewActions(
     config,
     LLMTask.REVIEWER,
   );
-  const isAnthropicModel = modelName.includes("claude-");
+  const isAnthropicModel = shouldUseAnthropicLogic(config, modelName);
 
   const { providerTools, providerMessages } = createToolsAndPrompt(
     state,

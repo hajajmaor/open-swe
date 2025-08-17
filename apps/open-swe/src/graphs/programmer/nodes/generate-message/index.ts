@@ -62,6 +62,28 @@ import { BindToolsInput } from "@langchain/core/language_models/chat_models";
 
 const logger = createLogger(LogLevel.INFO, "GenerateMessageNode");
 
+/**
+ * Determine if Anthropic model logic should be used based on configuration
+ */
+const shouldUseAnthropicLogic = (
+  config: GraphConfig,
+  modelName: string,
+): boolean => {
+  const forceModelLogic = config.configurable?.forceModelLogic;
+
+  if (forceModelLogic === "anthropic") {
+    return true;
+  } else if (
+    forceModelLogic === "openai" ||
+    forceModelLogic === "google-genai"
+  ) {
+    return false;
+  } else {
+    // Default "auto" behavior - infer from model name
+    return modelName.includes("claude-");
+  }
+};
+
 const formatDynamicContextPrompt = (state: GraphState) => {
   const planString = getActivePlanItems(state.taskPlan)
     .map((i) => `<plan-item index="${i.index}">\n${i.plan}\n</plan-item>`)
@@ -278,7 +300,7 @@ export async function generateAction(
     LLMTask.PROGRAMMER,
   );
   const markTaskCompletedTool = createMarkTaskCompletedToolFields();
-  const isAnthropicModel = modelName.includes("claude-");
+  const isAnthropicModel = shouldUseAnthropicLogic(config, modelName);
 
   const [missingMessages, { taskPlan: latestTaskPlan }] = await Promise.all([
     getMissingMessages(state, config),
