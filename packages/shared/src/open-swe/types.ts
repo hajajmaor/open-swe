@@ -27,34 +27,7 @@ import { withLangGraph } from "@langchain/langgraph/zod";
 import { BaseMessage } from "@langchain/core/messages";
 import { tokenDataReducer } from "../caching.js";
 
-export enum ModelLogicProvider {
-  ANTHROPIC = "anthropic",
-  OPENAI = "openai",
-  GOOGLE_GENAI = "google-genai",
-  AUTO = "auto",
-}
 
-export interface CacheMetrics {
-export enum ModelLogicProvider {
-  ANTHROPIC = "anthropic",
-  OPENAI = "openai",
-  GOOGLE_GENAI = "google-genai",
-  AUTO = "auto",
-}
-
-export enum ModelLogicProvider {
-  ANTHROPIC = "anthropic",
-  OPENAI = "openai",
-  GOOGLE_GENAI = "google-genai",
-  AUTO = "auto",
-}
-
-export interface CacheMetrics {
-  cacheCreationInputTokens: number;
-  cacheReadInputTokens: number;
-  inputTokens: number;
-  outputTokens: number;
-}
 
 export interface ModelTokenData extends CacheMetrics {
   /**
