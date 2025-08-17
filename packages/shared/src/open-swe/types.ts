@@ -28,6 +28,14 @@ import { BaseMessage } from "@langchain/core/messages";
 import { tokenDataReducer } from "../caching.js";
 
 export interface CacheMetrics {
+export enum ModelLogicProvider {
+  ANTHROPIC = "anthropic",
+  OPENAI = "openai",
+  GOOGLE_GENAI = "google-genai",
+  AUTO = "auto",
+}
+
+export interface CacheMetrics {
   cacheCreationInputTokens: number;
   cacheReadInputTokens: number;
   inputTokens: number;
@@ -677,6 +685,109 @@ export const GraphConfiguration = z.object({
   maxReviewCount: withLangGraph(z.number().optional(), {
     metadata: GraphConfigurationMetadata.maxReviewCount,
   }),
+  /**
+   * Force the model logic to be used, regardless of the model name.
+   * @default "auto"
+   */
+  forceModelLogic: withLangGraph(
+    z.nativeEnum(ModelLogicProvider).optional().default(ModelLogicProvider.AUTO),
+    {
+      metadata: GraphConfigurationMetadata.forceModelLogic,
+    },
+  ),
+  /**
+   * An optional custom OpenAI-compatible API endpoint URL.
+   */
+  openAIBaseUrl: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIBaseUrl,
+  }),
+  /**
+   * An optional OpenAI-compatible model name to use for planning tasks.
+   */
+  openAIPlannerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIPlannerModelName,
+  }),
+  /**
+   * An optional OpenAI-compatible model name to use for programming tasks.
+   */
+  openAIProgrammerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIProgrammerModelName,
+  }),
+  /**
+   * An optional OpenAI-compatible model name to use for reviewer tasks.
+   */
+  openAIReviewerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIReviewerModelName,
+  }),
+  /**
+   * An optional OpenAI-compatible model name to use for routing tasks.
+   */
+  openAIRouterModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAIRouterModelName,
+  }),
+  /**
+   * An optional OpenAI-compatible model name to use for summarizer tasks.
+   */
+  openAISummarizerModelName: withLangGraph(z.string().optional(), {
+    metadata: GraphConfigurationMetadata.openAISummarizerModelName,
+  }),
+  maxReviewCount: withLangGraph(z.number().optional(), {
+    metadata: GraphConfigurationMetadata.maxReviewCount,
+  }),
+  forceModelLogic: {
+    label: "Force Model Logic",
+    description:
+      "Force the model logic to be used, regardless of the model name. This is useful for using OpenAI-compatible models (e.g., LM Studio, OpenRouter) with Anthropic or Google GenAI logic.",
+    type: "select",
+    options: [
+      { value: ModelLogicProvider.AUTO, label: "Auto" },
+      { value: ModelLogicProvider.ANTHROPIC, label: "Anthropic" },
+      { value: ModelLogicProvider.OPENAI, label: "OpenAI" },
+      { value: ModelLogicProvider.GOOGLE_GENAI, label: "Google GenAI" },
+    ],
+    default: ModelLogicProvider.AUTO,
+  },
+  openAIBaseUrl: {
+    label: "OpenAI Base URL",
+    description:
+      "An optional custom OpenAI-compatible API endpoint URL (e.g., for LM Studio, OpenRouter, LiteLLM, Vertex AI proxy).",
+    type: "string",
+    default: "",
+  },
+  openAIPlannerModelName: {
+    label: "OpenAI Planner Model Name",
+    description:
+      "An optional OpenAI-compatible model name to use for planning tasks.",
+    type: "string",
+    default: "",
+  },
+  openAIProgrammerModelName: {
+    label: "OpenAI Programmer Model Name",
+    description:
+      "An optional OpenAI-compatible model name to use for programming tasks.",
+    type: "string",
+    default: "",
+  },
+  openAIReviewerModelName: {
+    label: "OpenAI Reviewer Model Name",
+    description:
+      "An optional OpenAI-compatible model name to use for reviewer tasks.",
+    type: "string",
+    default: "",
+  },
+  openAIRouterModelName: {
+    label: "OpenAI Router Model Name",
+    description: "An optional OpenAI-compatible model name to use for routing tasks.",
+    type: "string",
+    default: "",
+  },
+  openAISummarizerModelName: {
+    label: "OpenAI Summarizer Model Name",
+    description:
+      "An optional OpenAI-compatible model name to use for summarizer tasks.",
+    type: "string",
+    default: "",
+  },
 });
 
 export type GraphConfig = LangGraphRunnableConfig<
@@ -690,3 +801,4 @@ export interface AgentSession {
   threadId: string;
   runId: string;
 }
+
