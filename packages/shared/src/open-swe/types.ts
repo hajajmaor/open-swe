@@ -540,6 +540,14 @@ export const GraphConfiguration = z.object({
   plannerModelName: withLangGraph(z.string().optional(), {
     metadata: GraphConfigurationMetadata.plannerModelName,
   }),
+
+  /**
+   * Forces Anthropic-style prompting regardless of the model name.
+   * @default false
+   */
+  forceAnthropicPrompting: withLangGraph(z.boolean().optional(), {
+    metadata: GraphConfigurationMetadata.forceAnthropicPrompting,
+  }),
   /**
    * The temperature to use for programming/other advanced technical tasks.
    * @default 0
