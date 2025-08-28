@@ -499,6 +499,14 @@ export const GraphConfigurationMetadata: {
       type: "hidden",
     },
   },
+  forceAnthropicPrompting: {
+    x_open_swe_ui_config: {
+      type: "boolean",
+      default: false,
+      description:
+        "Force Anthropic-style prompting and message formatting even when using OpenAI-compatible endpoints. This allows using Anthropic models through providers like OpenRouter, LiteLLM, or LM Studio.",
+    },
+  },
 };
 
 export const GraphConfiguration = z.object({
@@ -676,6 +684,15 @@ export const GraphConfiguration = z.object({
    */
   maxReviewCount: withLangGraph(z.number().optional(), {
     metadata: GraphConfigurationMetadata.maxReviewCount,
+  }),
+  /**
+   * Force Anthropic-style prompting and message formatting even when using
+   * OpenAI-compatible endpoints. This allows using Anthropic models through
+   * providers like OpenRouter, LiteLLM, or LM Studio.
+   * @default false
+   */
+  forceAnthropicPrompting: withLangGraph(z.boolean().optional(), {
+    metadata: GraphConfigurationMetadata.forceAnthropicPrompting,
   }),
 });
 

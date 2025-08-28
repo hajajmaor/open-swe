@@ -278,7 +278,9 @@ export async function generateAction(
     LLMTask.PROGRAMMER,
   );
   const markTaskCompletedTool = createMarkTaskCompletedToolFields();
-  const isAnthropicModel = modelName.includes("claude-");
+  const isAnthropicModel =
+    modelName.includes("claude-") ||
+    Boolean(config.configurable?.forceAnthropicPrompting);
 
   const [missingMessages, { taskPlan: latestTaskPlan }] = await Promise.all([
     getMissingMessages(state, config),

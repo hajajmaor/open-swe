@@ -194,7 +194,9 @@ export async function generateReviewActions(
     config,
     LLMTask.REVIEWER,
   );
-  const isAnthropicModel = modelName.includes("claude-");
+  const isAnthropicModel =
+    modelName.includes("claude-") ||
+    Boolean(config.configurable?.forceAnthropicPrompting);
 
   const { providerTools, providerMessages } = createToolsAndPrompt(
     state,
